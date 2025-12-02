@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
         return self.email
 
 class EmailOTP(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='otp')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='otp')
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
 
