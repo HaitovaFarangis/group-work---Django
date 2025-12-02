@@ -92,3 +92,25 @@ def verify_view(request, user_id):
             "email": user.email
         })
 
+
+def login_view(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+
+    elif request.method == 'POST':
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, email=email, password=password)
+
+        if user:
+            login(request, user)
+            return redirect('/')
+
+        return render(request, 'login.html', {
+            'username': email,
+            'error': "Wrong email or password!"
+        })
+
+
+
