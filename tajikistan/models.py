@@ -36,3 +36,16 @@ class Bus(models.Model):
     def __str__(self):
         return self.name
 
+
+class Participant(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='participants')
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='participants')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.email
+
+
+
+    
+    

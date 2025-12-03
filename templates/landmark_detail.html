@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ landmark.name }}</title>
+</head>
+
+<body>
+
+    <h1>{{ landmark.name }}</h1>
+
+    {% if landmark.image %}
+    <img src="{{ landmark.image.url }}" alt="{{ landmark.name }}" style="max-width:400px;">
+    {% endif %}
+
+    <p>{{ landmark.description }}</p>
+
+    <p><strong>Категория:</strong> {{ landmark.get_category_display }}</p>
+    <p><strong>Локация:</strong> {{ landmark.location }}</p>
+    <p><strong>Часы работы:</strong> {{ landmark.opening_hours }}</p>
+    <p><strong>Цена входа:</strong> {{ landmark.entry_fee|default:"Бесплатно / нет данных" }}</p>
+
+    <hr>
+
+    <h2>Автобусы</h2>
+
+    {% if buses_data %}
+    <ul>
+        {% for item in buses_data %}
+        <li>
+            <h3>{{ item.bus.name }}</h3>
+
+            {% if item.bus.schedule %}
+            <pre>{{ item.bus.schedule }}</pre>
+            {% endif %}
+
+            <p><strong>Участников:</strong> {{ item.participants_count }}</p>
+
+            {% if item.participants_count > 0 %}
+            <ul>
+                {% for p in item.participants %}
+                <li>{{ p.user.email }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if item.is_participant %}
+            <button><a href="{url 'participant_delete' item.bus.id }">Not participate</a></button>
+            {% else %}
+            <button><a href="{url 'participant_create' item.bus.id }">Participate</a></button>
+            {% endif %}
+
+        </li>
+        {% endfor %}
+    </ul>
+
+
+    {% else %}
+    <p>Нет автобусов.</p>
+    {% endif %}
+
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for landmark in landmarks %}
+    
+    <img src="{{landmark.image.url}}" alt="">
+    <h1>{{landmark.name}}</h1>
+    <h2>{{landmark.location}}</h2>
+    <button><a href="{% url 'landmark_detail' landmark.id %}">More</a></button>
+    
+    {% endfor %}
+    
+</body>
+</html>
