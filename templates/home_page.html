@@ -1,19 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% for landmark in landmarks %}
-    
-    <img src="{{landmark.image.url}}" alt="">
-    <h1>{{landmark.name}}</h1>
-    <h2>{{landmark.location}}</h2>
-    <button><a href="{% url 'landmark_detail' landmark.id %}">More</a></button>
-    
-    {% endfor %}
-    
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Home{% endblock title %}
+
+{% block main %}
+
+
+{% if user.is_authenticated %}
+<h1>Your Buses</h1>
+
+{% for bus in user_buses %}
+<h2>Bus : {{ bus.name }}</h2>
+<p>Schedule :{{ bus.schedule }}</p>
+
+<h3>Landmarks for this bus:</h3>
+{% for lm in bus.landmarks.all %}
+<img src="{{ lm.image.url }}" width="150" alt="">
+<p>Landmark: {{ lm.name }}</p>
+<p>Location :{{ lm.location }}</p>
+{% endfor %}
+<button><a href="{% url 'participant_delete' bus.id %}">Not participate</a></button>
+<hr>
+{% empty %}
+<p>You are not registered in any buses yet.</p>
+
+{% endfor %}
+{% else %}
+<p>Please log in to see your buses.</p>
+{% endif %}
+
+<h1>All Landmarks of Tajikistan</h1>
+
+{% for lm in landmarks %}
+<img src="{{lm.image.url}}" alt="" width="200">
+<h2>{{lm.name}}</h2>
+<p>{{lm.location}}</p>
+<a href="{% url 'landmark_detail' lm.id %}"><button>More</button></a>
+{% endfor %}
+
+<hr>
+
+{% endblock main %}
