@@ -96,3 +96,9 @@ def landmark_detail_view(request, pk):
     return render(request, 'landmark_detail.html', context)
 # def home(request):
 #     return render(request, 'home.html')
+
+def my_profile(request):
+    return render(request, 'my_profile.html')
+
+def my_bookings(request):
+    return render(request, 'my_bookings.html')

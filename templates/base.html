@@ -1,25 +1,521 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My Project{% endblock title %}</title>
+    <title>{% block title %}Landmarks in Tajikistan{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --dark-color: #1e293b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        .footer-gradient {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .bus-animation {
+            animation: moveBus 20s linear infinite;
+        }
+
+        @keyframes moveBus {
+            0% {
+                transform: translateX(-100px);
+            }
+
+            100% {
+                transform: translateX(calc(100vw + 100px));
+            }
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .dropdown-menu {
+            transition: all 0.2s ease;
+            opacity: 0;
+            transform: translateY(-10px);
+            visibility: hidden;
+        }
+
+        .group:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <header>
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Logout</a>
-        {% else %}
-            <a href="{% url 'login' %}">Sign In</a>
-            <a href="{% url 'register' %}">Sign Up</a>
-        {% endif %}
+
+<body class="flex flex-col min-h-screen">
+
+    <header class="sticky top-0 z-50 shadow-lg">
+        <nav class="bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <a href="/" class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                                    <i class="fas fa-mountain text-white text-xl"></i>
+                                </div>
+                                <span class="text-2xl font-display font-bold text-gray-800">
+                                    Landmarks<span class="text-blue-600">TJ</span>
+                                </span>
+                            </a>
+                        </div>
+
+                        <div class="hidden md:block ml-10">
+                            <div class="flex space-x-8">
+                                <a href="/"
+                                    class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">Home</a>
+                                <a href="#"
+                                    class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">Tours</a>
+                                <a href="#"
+                                    class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">Landmarks</a>
+                                <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">Bus
+                                    Schedule</a>
+
+                                {% if user.is_authenticated and user.is_staff %}
+                                <div class="relative group">
+                                    <button
+                                        class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2 flex items-center">
+                                        <i class="fas fa-cogs mr-2"></i>
+                                        Admin
+                                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                                    </button>
+                                    <div
+                                        class="dropdown-menu absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100">
+                                        <a href="{% url 'bus_create' %}"
+                                            class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-bus text-blue-500 mr-2"></i>
+                                            Add Bus Tour
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-mountain text-emerald-500 mr-2"></i>
+                                            Add Landmark
+                                        </a>
+                                        <a href="#"
+                                            class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-users text-purple-500 mr-2"></i>
+                                            Manage Users
+                                        </a>
+                                        <div class="border-t border-gray-100 mt-2 pt-2">
+                                            <a href="#"
+                                                class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-chart-bar text-yellow-500 mr-2"></i>
+                                                Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <a href="#"
+                                    class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">About</a>
+                                <a href="#"
+                                    class="nav-link text-gray-700 hover:text-blue-600 font-medium px-3 py-2">Contact</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        {% if user.is_authenticated %}
+                        <div class="flex items-center space-x-3">
+                            <div class="relative group">
+                                <button class="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                                    <div class="relative">
+                                        <div
+                                            class="w-8 h-8 rounded-full {% if user.is_staff %}admin-badge{% else %}bg-blue-100{% endif %} flex items-center justify-center">
+                                            <i
+                                                class="fas fa-user {% if user.is_staff %}text-white{% else %}text-blue-600{% endif %}"></i>
+                                        </div>
+                                        {% if user.is_staff %}
+                                        <div
+                                            class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-crown text-white text-xs"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex flex-col items-start">
+                                        <span class="font-medium text-sm">{{ user.username }}</span>
+                                        {% if user.is_staff %}
+                                        <span class="text-xs text-yellow-600 font-bold">ADMIN</span>
+                                        {% else %}
+                                        <span class="text-xs text-gray-500">User</span>
+                                        {% endif %}
+                                    </div>
+                                    <i class="fas fa-chevron-down text-sm text-gray-400"></i>
+                                </button>
+                                <div
+                                    class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl py-3 z-50 border border-gray-100">
+                                    <div class="px-4 py-3 border-b border-gray-100">
+                                        <p class="font-medium text-gray-800">{{ user.username }}</p>
+                                        <p class="text-sm text-gray-600">{{ user.email }}</p>
+                                        {% if user.is_staff %}
+                                        <span
+                                            class="inline-block mt-1 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">
+                                            <i class="fas fa-shield-alt mr-1"></i>Administrator
+                                        </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="py-2">
+                                        <a href="{% url 'my_profile' %}"
+                                            class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-user-circle text-blue-500 mr-3 w-5"></i>
+                                            My Profile
+                                        </a>
+
+                                        {% if not user.is_staff %}
+                                        <a href="{% url 'my_bookings' %}"
+                                            class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-ticket-alt text-emerald-500 mr-3 w-5"></i>
+                                            My Bookings
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="border-t border-gray-100 pt-2 mt-2">
+                                        <a href="{% url 'logout' %}"
+                                            class="block px-4 py-2.5 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors">
+                                            <i class="fas fa-sign-out-alt text-gray-400 mr-3 w-5"></i>
+                                            Logout
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="#"
+                                class="btn-primary text-white px-5 py-2.5 rounded-lg font-medium shadow-md hover:shadow-lg">
+                                <i class="fas fa-bus mr-2"></i>Book a Bus
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="flex items-center space-x-4">
+                            <a href="{% url 'login' %}"
+                                class="text-gray-700 hover:text-blue-600 font-medium flex items-center">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                            </a>
+                            <a href="{% url 'register' %}"
+                                class="btn-primary text-white px-5 py-2.5 rounded-lg font-medium shadow-md hover:shadow-lg">
+                                Sign Up <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <button class="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none"
+                            id="mobileMenuButton">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:hidden hidden bg-white border-t" id="mobileMenu">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="/"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-home mr-3"></i>Home
+                    </a>
+                    <a href="#"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-route mr-3"></i>Tours
+                    </a>
+                    <a href="#"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-mountain mr-3"></i>Landmarks
+                    </a>
+                    <a href="#"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-bus mr-3"></i>Bus Schedule
+                    </a>
+
+                    {% if user.is_authenticated and user.is_staff %}
+                    <div class="border-t border-gray-200 mt-2 pt-2">
+                        <p class="px-3 py-2 text-xs font-bold text-gray-500 uppercase">Admin Panel</p>
+                        <a href="{% url 'bus_create' %}"
+                            class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                            <i class="fas fa-bus text-blue-500 mr-3"></i>Add Bus Tour
+                        </a>
+                        <a href="#"
+                            class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                            <i class="fas fa-mountain text-emerald-500 mr-3"></i>Add Landmark
+                        </a>
+                        <a href="#"
+                            class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                            <i class="fas fa-chart-bar text-yellow-500 mr-3"></i>Dashboard
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <a href="#"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-info-circle mr-3"></i>About
+                    </a>
+                    <a href="#"
+                        class="block px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md flex items-center">
+                        <i class="fas fa-envelope mr-3"></i>Contact
+                    </a>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="border-t border-gray-200 px-4 py-4 bg-gray-50">
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <div
+                                class="w-10 h-10 rounded-full {% if user.is_staff %}admin-badge{% else %}bg-blue-100{% endif %} flex items-center justify-center">
+                                <i
+                                    class="fas fa-user {% if user.is_staff %}text-white{% else %}text-blue-600{% endif %}"></i>
+                            </div>
+                            {% if user.is_staff %}
+                            <div
+                                class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-crown text-white text-xs"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="font-medium text-gray-800">{{ user.username }}</p>
+                            <p class="text-sm text-gray-600">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 space-y-2">
+                        <a href="{% url 'logout' %}"
+                            class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 rounded-lg font-medium">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </nav>
     </header>
-    <main>
+
+    <main class="flex-grow">
         {% block main %}
-        {% endblock main %}
+        {% endblock %}
     </main>
-    <footer>
-        This is footer
+
+    <footer class="footer-gradient text-white mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                            <i class="fas fa-mountain text-white text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-display font-bold">
+                            Landmarks<span class="text-blue-400">TJ</span>
+                        </span>
+                    </div>
+                    <p class="text-gray-300 mb-6">
+                        Discover the breathtaking beauty of Tajikistan's landmarks. Book bus tours to explore majestic
+                        mountains, historical sites, and cultural treasures.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-400 flex items-center justify-center transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-pink-600 flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-700 flex items-center justify-center transition-colors">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-chevron-right text-xs mr-2"></i>Home</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-chevron-right text-xs mr-2"></i>Popular Tours</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-chevron-right text-xs mr-2"></i>Bus Schedule</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-chevron-right text-xs mr-2"></i>Book a Tour</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-chevron-right text-xs mr-2"></i>FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Popular Destinations</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-map-marker-alt text-xs mr-2"></i>Pamir Highway</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-map-marker-alt text-xs mr-2"></i>Iskanderkul Lake</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-map-marker-alt text-xs mr-2"></i>Dushanbe City</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-map-marker-alt text-xs mr-2"></i>Fann Mountains</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><i
+                                    class="fas fa-map-marker-alt text-xs mr-2"></i>Khorog City</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-blue-400 mt-1 mr-3"></i>
+                            <span class="text-gray-300">Dushanbe, Tajikistan</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-blue-400 mr-3"></i>
+                            <span class="text-gray-300">+992 123 456 789</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-blue-400 mr-3"></i>
+                            <span class="text-gray-300">info@landmarkstj.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-bus text-blue-400 mr-3"></i>
+                            <span class="text-gray-300">24/7 Bus Booking</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-gray-400">
+                    &copy; {% now "Y" %} Landmarks in Tajikistan. All rights reserved.
+                    <span class="mx-2">•</span>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <span class="mx-2">•</span>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </p>
+                <p class="text-gray-500 text-sm mt-2">
+                    <i class="fas fa-bus mr-1"></i> Travel safely with our certified bus tours
+                </p>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            document.addEventListener('click', function (event) {
+                if (!event.target.closest('nav') && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!event.target.closest('.group')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.style.opacity = '0';
+                        menu.style.visibility = 'hidden';
+                        menu.style.transform = 'translateY(-10px)';
+                    });
+                }
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
+
 </html>
