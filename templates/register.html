@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Register{% endblock title %}
 
 {% block main %}
 <h2>Register</h2>
@@ -27,4 +27,4 @@
 </form>
 
 <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
-{% endblock %}
+{% endblock main %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Bus</title>
+
+
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Bus</h2>
+        <form method="POST">
+            {% csrf_token %}
+
+        <label for="name">Bus Name</label>
+        <input type="text" name="name" id="name" placeholder="Enter bus name" required><br><br>
+         {% for i in landmarks %}
+         <h3>{{i.id}}.{{i.name}}</h3>
+         {% endfor %}
+        <label for="landmarks">Landmarks</label>
+        <input type="text" name="landmarks" id="landmarks" placeholder="Whrite id of given   landmarks "><br><br>
+        
+        <label for="schedule">Schedule</label>
+        <textarea name="schedule" id="schedule" rows="4" placeholder="Enter schedule here..."></textarea><br><br>
+        
+        <button type="submit">Add Bus</button>
+    </form>
+</div>
+
+</body>
+</html>
