@@ -1,41 +1,240 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock title %}
+{% block title %}Home - Landmarks in Tajikistan{% endblock title %}
 
 {% block main %}
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-emerald-900/10"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-display">
+                    Discover the Beauty of 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600">Tajikistan</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Explore breathtaking landmarks, book bus tours, and experience the rich culture 
+                    and natural wonders of Tajikistan.
+                </p>
+                {% if not user.is_authenticated %}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'register' %}" 
+                       class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-medium px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        <i class="fas fa-user-plus mr-2"></i>Join Now
+                    </a>
+                    <a href="{% url 'login' %}" 
+                       class="bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 font-medium px-8 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
+    {% if user.is_authenticated %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">
+                        <i class="fas fa-bus text-yellow-500 mr-2"></i>
+                        Your Bus Tours
+                    </h2>
+                    <p class="text-gray-600 mt-1">Manage your booked bus tours</p>
+                </div>
+                <div class="flex items-center space-x-2 text-blue-600">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="font-medium">{{ user.username }}</span>
+                </div>
+            </div>
 
-{% if user.is_authenticated %}
-<h1>Your Buses</h1>
+            {% if user_buses %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for bus in user_buses %}
+                <div class="bg-gradient-to-br from-blue-50 to-emerald-50 border border-blue-100 rounded-xl p-5 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">{{ bus.name }}</h3>
+                            <div class="flex items-center mt-2 text-gray-600">
+                                <i class="fas fa-clock mr-2 text-blue-500"></i>
+                                <span class="font-medium">Schedule: {{ bus.schedule }}</span>
+                            </div>
+                        </div>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full">
+                            <i class="fas fa-check-circle mr-1"></i>Booked
+                        </span>
+                    </div>
 
-{% for bus in user_buses %}
-<h2>Bus : {{ bus.name }}</h2>
-<p>Schedule :{{ bus.schedule }}</p>
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-mountain text-emerald-500 mr-2"></i>
+                            Landmarks on this route:
+                        </h4>
+                        <div class="space-y-3">
+                            {% for lm in bus.landmarks.all %}
+                            <div class="flex items-start bg-white rounded-lg p-3 shadow-sm">
+                                <div class="flex-shrink-0 mr-3">
+                                    <img src="{{ lm.image.url }}" alt="{{ lm.name }}" 
+                                         class="w-16 h-16 object-cover rounded-lg shadow">
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">{{ lm.name }}</p>
+                                    <p class="text-sm text-gray-600 flex items-center mt-1">
+                                        <i class="fas fa-map-marker-alt text-red-400 mr-1 text-xs"></i>
+                                        {{ lm.location }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-<h3>Landmarks for this bus:</h3>
-{% for lm in bus.landmarks.all %}
-<img src="{{ lm.image.url }}" width="150" alt="">
-<p>Landmark: {{ lm.name }}</p>
-<p>Location :{{ lm.location }}</p>
-{% endfor %}
-<button><a href="{% url 'participant_delete' bus.id %}">Not participate</a></button>
-<hr>
-{% empty %}
-<p>You are not registered in any buses yet.</p>
+                    <div class="flex justify-between items-center pt-4 border-t border-blue-100">
+                        <a href="{% url 'participant_delete' bus.id %}" 
+                           class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center transition-colors duration-200">
+                            <i class="fas fa-times-circle mr-1"></i>
+                            Cancel Participation
+                        </a>
+                        <a href="#" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                            View Details <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-bus text-blue-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-medium text-gray-700 mb-2">No Bus Tours Booked Yet</h3>
+                <p class="text-gray-600 mb-6">You haven't registered for any bus tours yet.</p>
+                <a href="#" class="bg-gradient-to-r from-blue-500 to-emerald-500 text-white px-6 py-2 rounded-lg font-medium inline-flex items-center">
+                    <i class="fas fa-search mr-2"></i> Explore Available Tours
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-2xl p-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-sign-in-alt text-blue-500 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-medium text-gray-700 mb-2">Sign In to View Your Tours</h3>
+            <p class="text-gray-600 mb-4">Log in to see your booked bus tours and manage your reservations.</p>
+            <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium inline-flex items-center">
+                <i class="fas fa-sign-in-alt mr-2"></i> Sign In Now
+            </a>
+        </div>
+    </div>
+    {% endif %}
 
-{% endfor %}
-{% else %}
-<p>Please log in to see your buses.</p>
-{% endif %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 font-display">
+                Explore Tajikistan's Landmarks
+            </h2>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                Discover the natural wonders, historical sites, and cultural treasures of Tajikistan
+            </p>
+        </div>
 
-<h1>All Landmarks of Tajikistan</h1>
+        {% if landmarks %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for lm in landmarks %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 card-hover">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="{{ lm.image.url }}" alt="{{ lm.name }}" 
+                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                </div>
+                
+                <div class="p-5">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ lm.name }}</h3>
+                    <p class="text-gray-600 mb-4 flex items-center">
+                        <i class="fas fa-map-marker-alt text-red-400 mr-2"></i>
+                        {{ lm.location }}
+                    </p>
+                    
+                    <div class="flex justify-between items-center">
+                        <a href="{% url 'landmark_detail' lm.id %}" 
+                           class="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center">
+                            Explore
+                            <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                        </a>
+                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            <i class="fas fa-bus mr-1 text-yellow-500"></i>
+                            Bus Tours Available
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                View All Landmarks
+                <i class="fas fa-chevron-right ml-2"></i>
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <i class="fas fa-mountain text-gray-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-medium text-gray-700 mb-2">No Landmarks Available</h3>
+            <p class="text-gray-600">Check back later for new landmarks.</p>
+        </div>
+        {% endif %}
+    </div>
 
-{% for lm in landmarks %}
-<img src="{{lm.image.url}}" alt="" width="200">
-<h2>{{lm.name}}</h2>
-<p>{{lm.location}}</p>
-<a href="{% url 'landmark_detail' lm.id %}"><button>More</button></a>
-{% endfor %}
+    <div class="bg-gradient-to-r from-blue-600 to-emerald-600 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center text-white">
+                <h2 class="text-3xl font-bold mb-4">Ready to Explore?</h2>
+                <p class="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+                    Book your bus tour today and experience the majestic beauty of Tajikistan's landmarks
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    {% if user.is_authenticated %}
+                    <a href="#" 
+                       class="bg-white text-blue-600 hover:bg-blue-50 font-bold px-8 py-3 rounded-lg shadow-lg transition-all duration-300 inline-flex items-center">
+                        <i class="fas fa-bus mr-2"></i>
+                        Book a Tour Now
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" 
+                       class="bg-white text-blue-600 hover:bg-blue-50 font-bold px-8 py-3 rounded-lg shadow-lg transition-all duration-300 inline-flex items-center">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Join Free & Book
+                    </a>
+                    <a href="#" 
+                       class="bg-transparent border-2 border-white text-white hover:bg-white/10 font-bold px-8 py-3 rounded-lg transition-all duration-300 inline-flex items-center">
+                        <i class="fas fa-eye mr-2"></i>
+                        View Tour Packages
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<hr>
-
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .font-display {
+        font-family: 'Playfair Display', serif;
+    }
+</style>
 {% endblock main %}
