@@ -45,9 +45,9 @@
             </ul>
             {% endif %}
             {% if item.is_participant %}
-            <button><a href="{url 'participant_delete' item.bus.id }">Not participate</a></button>
+            <button><a href="{% url 'participant_delete' item.bus.id %}">Not participate</a></button>
             {% else %}
-            <button><a href="{url 'participant_create' item.bus.id }">Participate</a></button>
+            <button><a href="{% url 'participant_create' item.bus.id %}">Participate</a></button>
             {% endif %}
 
         </li>

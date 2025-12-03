@@ -8,6 +8,7 @@
 
 <h1>Join Bus</h1>
 <h1>Do you want join somebody</h1>
+<span>Do you want to register yourself -> <a href="{% url 'participant_create_me' bus.id  %}">Join me</a></span>
 
 {% if error %}
 <h2>{{error}}</h2>
@@ -19,7 +20,6 @@
     <input type="email" name="email" required><br><br>
 
     <button type="submit">Join</button>
-    <span>Do you want to register yourself -> <a href="{% url 'participant_create_me' bus.id  %}">Joim me</a></span>
 </form>
 
 </body>

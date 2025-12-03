@@ -19,14 +19,25 @@ def bus_create_view(request):
         return HttpResponse('You are not admin ')
 
 
+def participant_delete_view(request, pk):
+    bus = Bus.objects.filter(id = pk).first()
+    if request.user.is_authenticated:
+        participants = Participant.objects.filter(user = request.user, bus = bus).first()
+        participants.delete()
+        return redirect('/')
+    else:
+        return HttpResponse("login")
 
  
 def participant_create_ME_view(request, pk):
-    if request.method =="POST":
-        participants = Participant(user = request.user, bus = pk)
+    bus = Bus.objects.filter(id = pk).first()
+    if request.user.is_authenticated:
+        participants = Participant(user = request.user, bus = bus)
         participants.save()
-        
         return redirect('/')
+    else:
+        return HttpResponse("login")
+        
 
 def participant_create_view(request, pk):
     bus = Bus.objects.get(id=pk)
@@ -41,11 +52,18 @@ def participant_create_view(request, pk):
             return redirect('/')
         elif not is_email:
             return render(request, 'participant_create_view.html',context={'error':"No such email, try again", 'bus':bus})
-
+from django.shortcuts import render
+from .models import Landmark, Participant, Bus
 
 def home_list_view(request):
-    landmarks = Landmark.objects.all()
-    return render(request, 'home_page.html', context={'landmarks':landmarks})
+    if request.user.is_authenticated:
+        user_buses = Bus.objects.filter(participants__user=request.user).distinct()
+
+        landmarks = Landmark.objects.filter(buses__in=user_buses).distinct()
+    else:
+        landmarks = Landmark.objects.none()
+
+    return render(request, 'home_page.html', context={'landmarks': landmarks})
 
 
 def landmark_detail_view(request, pk):
