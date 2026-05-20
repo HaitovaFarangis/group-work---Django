@@ -8,5 +8,8 @@ urlpatterns = [
     path('add_participant/<int:pk>',participant_create_view, name = 'participant_create'),
     path('remove_participant<int:pk>',participant_delete_view, name = 'participant_delete'),
     path('landmark_detail/<int:pk>',landmark_detail_view, name = 'landmark_detail'),
+    path("my_profile/", my_profile, name='my_profile'),
+    path("my_bookings/", my_bookings, name='my_bookings'),
+    path("landmarks_list/", landmarks_list_view, name='landmarks_list'),
     
 ]

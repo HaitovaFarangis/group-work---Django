@@ -8,12 +8,15 @@ def bus_create_view(request):
             landmarks = Landmark.objects.all()
             return render(request, 'add_bus.html', context={'landmarks':landmarks})
         elif request.method == 'POST':
-            name = request.POST.get('name', None)
-            landmarks = request.POST.get('landmarks', None)
-            schedule = request.POST.get('schedule', None)
+            name = request.POST.get('name', None)           
+            schedule = request.POST.get('schedule', '')
+            landmarks_raw = request.POST.get("landmarks", "")
+            landmarks_ids =[
+                int(x.strip()) for x in landmarks_raw.split(',') if x.strip().isdigit()
+            ]
             
             new_bus = Bus.objects.create(name = name, schedule=schedule)
-            new_bus.landmarks.set(landmarks)
+            new_bus.landmarks.set(landmarks_ids)
             return redirect('/')
     else:
         return HttpResponse('You are not admin ')
@@ -94,5 +97,15 @@ def landmark_detail_view(request, pk):
         "buses_data": buses_data,
     }
     return render(request, 'landmark_detail.html', context)
+
+def landmarks_list_view(request):
+    landmarks_list = Landmark.objects.all()
+    return render(request, 'landmarks.html',context={'landmarks':landmarks_list})
 # def home(request):
 #     return render(request, 'home.html')
+
+def my_profile(request):
+    return render(request, 'my_profile.html')
+
+def my_bookings(request):
+    return render(request, 'my_bookings.html')

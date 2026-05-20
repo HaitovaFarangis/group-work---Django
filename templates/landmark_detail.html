@@ -1,64 +1,266 @@
-<!doctype html>
-<html>
+{% extends "base.html" %}
+{% block title %}{{ landmark.name }} - Landmarks in Tajikistan{% endblock title %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{{ landmark.name }}</title>
-</head>
+{% block main %}
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/" class="inline-flex items-center text-sm text-gray-500 hover:text-blue-600">
+                        <i class="fas fa-home mr-2"></i>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="#" class="text-sm text-gray-500 hover:text-blue-600">Landmarks</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-sm font-medium text-gray-700">{{ landmark.name }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
 
-<body>
-
-    <h1>{{ landmark.name }}</h1>
-
-    {% if landmark.image %}
-    <img src="{{ landmark.image.url }}" alt="{{ landmark.name }}" style="max-width:400px;">
-    {% endif %}
-
-    <p>{{ landmark.description }}</p>
-
-    <p><strong>Категория:</strong> {{ landmark.get_category_display }}</p>
-    <p><strong>Локация:</strong> {{ landmark.location }}</p>
-    <p><strong>Часы работы:</strong> {{ landmark.opening_hours }}</p>
-    <p><strong>Цена входа:</strong> {{ landmark.entry_fee|default:"Бесплатно / нет данных" }}</p>
-
-    <hr>
-
-    <h2>Автобусы</h2>
-
-    {% if buses_data %}
-    <ul>
-        {% for item in buses_data %}
-        <li>
-            <h3>{{ item.bus.name }}</h3>
-
-            {% if item.bus.schedule %}
-            <pre>{{ item.bus.schedule }}</pre>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            {% if landmark.image %}
+            <div class="relative h-96 overflow-hidden">
+                <img src="{{ landmark.image.url }}" alt="{{ landmark.name }}" 
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-8">
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 font-display">{{ landmark.name }}</h1>
+                    <div class="flex items-center text-white/90">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span class="text-lg">{{ landmark.location }}</span>
+                    </div>
+                </div>
+            </div>
             {% endif %}
 
-            <p><strong>Участников:</strong> {{ item.participants_count }}</p>
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">About This Landmark</h2>
+                        <div class="prose prose-lg max-w-none text-gray-700">
+                            <p>{{ landmark.description }}</p>
+                        </div>
 
-            {% if item.participants_count > 0 %}
-            <ul>
-                {% for p in item.participants %}
-                <li>{{ p.user.email }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% if item.is_participant %}
-            <button><a href="{% url 'participant_delete' item.bus.id %}">Not participate</a></button>
-            {% else %}
-            <button><a href="{% url 'participant_create' item.bus.id %}">Participate</a></button>
-            {% endif %}
+                        <div class="mt-12">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                                <i class="fas fa-bus text-yellow-500 mr-3"></i>
+                                Available Bus Tours
+                            </h2>
 
-        </li>
-        {% endfor %}
-    </ul>
+                            {% if buses_data %}
+                            <div class="space-y-6">
+                                {% for item in buses_data %}
+                                <div class="border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors duration-300">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                                        <div>
+                                            <h3 class="text-xl font-bold text-gray-800">{{ item.bus.name }}</h3>
+                                            {% if item.bus.schedule %}
+                                            <div class="flex items-center mt-2 text-gray-600">
+                                                <i class="fas fa-clock text-blue-500 mr-2"></i>
+                                                <span class="font-medium">Schedule: {{ item.bus.schedule }}</span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="mt-4 md:mt-0">
+                                            <div class="inline-flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
+                                                <i class="fas fa-users mr-2"></i>
+                                                <span class="font-medium">{{ item.participants_count }} participants</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    {% if item.participants_count > 0 %}
+                                    <div class="mb-6">
+                                        <h4 class="font-medium text-gray-700 mb-3">Current Participants:</h4>
+                                        <div class="flex flex-wrap gap-2">
+                                            {% for p in item.participants %}
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm inline-flex items-center">
+                                                <i class="fas fa-user-circle text-gray-400 mr-2"></i>
+                                                {{ p.user.email }}
+                                            </span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
 
-    {% else %}
-    <p>Нет автобусов.</p>
-    {% endif %}
+                                    <div class="pt-4 border-t border-gray-100">
+                                        {% if item.is_participant %}
+                                        <a href="{% url 'participant_delete' item.bus.id %}" 
+                                           class="inline-flex items-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 font-medium px-6 py-3 rounded-lg transition-colors duration-200">
+                                            <i class="fas fa-user-minus mr-2"></i>
+                                            Leave This Tour
+                                        </a>
+                                        <span class="ml-4 text-sm text-green-600 font-medium">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            You are participating
+                                        </span>
+                                        {% else %}
+                                        <a href="{% url 'participant_create' item.bus.id %}" 
+                                           class="inline-flex items-center bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                                            <i class="fas fa-user-plus mr-2"></i>
+                                            Join This Tour
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-12 bg-gray-50 rounded-xl">
+                                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="fas fa-bus text-gray-400 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-medium text-gray-700 mb-2">No Bus Tours Available</h3>
+                                <p class="text-gray-600">Check back later for bus tours to this landmark.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
-</body>
+                    <div class="lg:col-span-1">
+                        <div class="bg-gradient-to-br from-blue-50 to-emerald-50 border border-blue-100 rounded-xl p-6 sticky top-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-6">Landmark Details</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex items-center text-gray-600 mb-2">
+                                        <i class="fas fa-tag text-blue-500 mr-3 w-5"></i>
+                                        <span class="font-medium">Category:</span>
+                                    </div>
+                                    <p class="text-gray-800 font-medium text-lg">{{ landmark.get_category_display }}</p>
+                                </div>
 
-</html>
+                                <div>
+                                    <div class="flex items-center text-gray-600 mb-2">
+                                        <i class="fas fa-map-marker-alt text-red-400 mr-3 w-5"></i>
+                                        <span class="font-medium">Location:</span>
+                                    </div>
+                                    <p class="text-gray-800">{{ landmark.location }}</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center text-gray-600 mb-2">
+                                        <i class="fas fa-clock text-emerald-500 mr-3 w-5"></i>
+                                        <span class="font-medium">Opening Hours:</span>
+                                    </div>
+                                    <p class="text-gray-800">{{ landmark.opening_hours }}</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center text-gray-600 mb-2">
+                                        <i class="fas fa-ticket-alt text-purple-500 mr-3 w-5"></i>
+                                        <span class="font-medium">Entry Fee:</span>
+                                    </div>
+                                    <p class="text-gray-800 font-medium text-lg">
+                                        {% if landmark.entry_fee %}
+                                            {{ landmark.entry_fee }}
+                                        {% else %}
+                                            <span class="text-green-600">Free / No data</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-blue-100">
+                                <h4 class="font-bold text-gray-800 mb-4">Quick Stats</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                                        <div class="text-2xl font-bold text-blue-600 mb-1">
+                                            {{ buses_data|length }}
+                                        </div>
+                                        <div class="text-sm text-gray-600">Bus Tours</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                                        <div class="text-2xl font-bold text-emerald-600 mb-1">
+                                            {% with total=0 %}
+                                                {% for item in buses_data %}
+                                                    {% with total=total|add:item.participants_count %}
+                                                    {% endwith %}
+                                                {% endfor %}
+                                                {{ total }}
+                                            {% endwith %}
+                                        </div>
+                                        <div class="text-sm text-gray-600">Total Participants</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <a href="javascript:history.back()" 
+                                   class="w-full inline-flex justify-center items-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200">
+                                    <i class="fas fa-arrow-left mr-2"></i>
+                                    Back to Landmarks
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Explore More Landmarks</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="#" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="h-32 bg-gradient-to-r from-blue-100 to-emerald-100"></div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-800">Pamir Highway</h3>
+                        <p class="text-sm text-gray-600 mt-1">Eastern Tajikistan</p>
+                    </div>
+                </a>
+                <a href="#" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="h-32 bg-gradient-to-r from-orange-100 to-yellow-100"></div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-800">Iskanderkul</h3>
+                        <p class="text-sm text-gray-600 mt-1">Fann Mountains</p>
+                    </div>
+                </a>
+                <a href="#" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="h-32 bg-gradient-to-r from-purple-100 to-pink-100"></div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-800">Dushanbe</h3>
+                        <p class="text-sm text-gray-600 mt-1">Capital City</p>
+                    </div>
+                </a>
+                <a href="#" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="h-32 bg-gradient-to-r from-green-100 to-teal-100"></div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-800">Khorog</h3>
+                        <p class="text-sm text-gray-600 mt-1">Pamir Region</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .font-display {
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .prose {
+        line-height: 1.75;
+    }
+    
+    .prose p {
+        margin-bottom: 1rem;
+    }
+    
+    .sticky {
+        position: sticky;
+    }
+</style>
+{% endblock main %}
